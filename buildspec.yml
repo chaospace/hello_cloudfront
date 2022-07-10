@@ -1,0 +1,30 @@
+# 권장버전 현재는 .2
+version: 0.2
+
+# 빌드 단계별 원하는 명령 입력
+phases:
+  # 빌드전 환경 설정
+  install:
+    nodejs: 16
+  # 빌드전 수행할 명령
+  pre_build:
+    commands:
+      - echo build Phase >> pre_build phrase...
+      - yarn install
+  # 빌드 명령
+  build:
+    commands:
+      - echo build Phase >> build start on 'date'
+      - yarn run build
+  # 빌드 후 실행 할 명령
+  post_build:
+    commands:
+      - echo build Phase >> build complete on 'date'
+  # 빌드 결과물로 나온 아티팩트에 처리
+  artificats:
+    files:
+      - ./**/*
+      # - location
+    #name: $(date +%Y-%m-%d)
+    base-directory: dist
+    discard-paths: yes
