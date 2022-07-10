@@ -1,80 +1,82 @@
-# 리액트 프로젝트 scaffolding
+# AWS CodeBuild와 S3연동
 
-리액트 기반 플젝 베이스 제공
+1. github에 올린 소스 커밋
+2. CodeBuild를 통한 소스 빌드
+3. 빌드 산출물 s3 이동
 
-- 주요환경
-  - webpack5.x
-  - react18.x
-  - typescript
-  - svgr
-  - storybook
-  - scss
-  - style-component
-  - jest
-  - axios
-  - style-lint
-  - eslint
-  - prettier
+## 준비사항
 
-## webpack 주요 설정 정리
+- aws 계정생성( 프리티어 )
+- 사용할 IAM 사용자 생성
+  - 필요한 권한
+    - S3FullAccess
+    - CloudWatchFullAccess
+    - AWSCodeBuildDeveloperAccess
+- S3 버킷 생성
 
-**eslint&prettier**
+  - 권한 public적용( 모두 접근 가능하게 )
 
-- yarn add -D eslint-config-prettier eslint-plugin-pretier
-  - config-prettier : ESLint의 formatting 관련 설정 중 Prettier와 충돌하는 부분 비활성화.
-  - plugin-prettier : Prettier에서 인식하는 코드상의 포맷 오류를 ESLint 오류로 출력
-- yarn add -D eslint-plugin-react eslint-plugin-react-hooks
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "AddPerm",
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": "s3:GetObject",
+          "Resource": "arn:aws:s3:::chaospace-cloudfront/*"
+        }
+      ]
+    }
+    ```
 
-**react-fast-refresh**
+  - 정적 웹 사이트 호스팅 활성화
 
-- yarn add -D @pmmmwh/react-refresh-webpack-plugin react-refresh
-- yarn add -D type-fest
-  - typescript프로젝트일 경우 설치
+- CodeBuild 생성
 
-<details>
-<summary>webpack 적용 예시( wepback-dev-server )</summary>
+  - 코드를 가져올 github 설정
+    ![s3설정화면](./resource//image/codebuild_github_setting.png)
+  - build환경 설정
 
-```js
-const isDevelopment = process.env.NODE_ENV !== 'production';
+    - 사용할 runtime과 기본 설정
+      ![s3설정화면](./resource//image/codebuild_setting2.png)
+    - 서비스 역할에 이전에 만들어 둔 역할 적용( 안 만들어도 여기서 동적으로 적용 가능 )
 
-module.exports = {
-  mode: isDevelopment ? 'development' : 'production',
-  devServer: {
-    hot: true
-  }
-};
-```
+  - 배포설정을 위한 buildspec.yml 설정 ( aws설정 창에서 바로 적용가능 혹은 project에 buildspec.yml을 추가)
 
-</details>
+  ```yaml
+  # 권장버전 현재는 .2
+  version: 0.2
 
-<details>
-<summary>babel-loader 설정</summary>
+  # 빌드 단계별 원하는 명령 입력
+  phases:
+  # 빌드전 환경 설정
+    install:
+      runtime-versions:
+        nodejs: 16
+        commands: # yarn 사용 - npm install yarn -g
 
-```js
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+    # 빌드전 수행할 명령
+    pre_build:
+      commands: - echo build Phase >> pre_build phrase...
 
-const isDevelopment = process.env.NODE_ENV !== 'production';
+    # 빌드 명령
+    build:
+      commands:
+      - echo build Phase >> build start on 'date' - yarn install - yarn run build
 
-module.exports = {
-  mode: isDevelopment ? 'development' : 'production',
-  module: {
-    rules: [
-      {
-        test: /\.[jt]sx?$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: require.resolve('babel-loader'),
-            options: {
-              plugins: [isDevelopment && require.resolve('react-refresh/babel')].filter(Boolean)
-            }
-          }
-        ]
-      }
-    ]
-  },
-  plugins: [isDevelopment && new ReactRefreshWebpackPlugin()].filter(Boolean)
-};
-```
+    # 빌드 후 실행 할 명령
+    post_build:
+      commands:
+        - echo build Phase >> build complete on 'date'
+        # copy the contents of /build to S3
+        - aws s3 sync [빌드 아웃풋 폴더]  s3://[버킷주소]/
 
-</details>
+    # 빌드 결과물로 나온 아티팩트에 처리
+
+  artifacts:
+    files: - '**/*' # - location
+    #name: $(date +%Y-%m-%d)
+    base-directory: [빌드 아웃풋 폴더] ( 기본 ./ )
+  ```
