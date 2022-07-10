@@ -14,16 +14,17 @@ phases:
   pre_build:
     commands:
       - echo build Phase >> pre_build phrase...
-      - yarn install
   # 빌드 명령
   build:
     commands:
       - echo build Phase >> build start on 'date'
+      - yarn install
       - yarn run build
   # 빌드 후 실행 할 명령
   post_build:
     commands:
       - echo build Phase >> build complete on 'date'
+      - aws s3 cp --recursive dist/ s3://chaospace-cloudfront
   # 빌드 결과물로 나온 아티팩트에 처리
   artificats:
     files:
