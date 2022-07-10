@@ -1,13 +1,14 @@
 {
-  "name": "react_scaffolding",
+  "name": "hello_cloudfront",
   "version": "1.0.0",
-  "description": "리액트 기반 프로젝트 베이스 환경제공",
+  "description": "aws cloudfront학습 플젝",
   "main": "index.js",
   "author": "chaospace <ichaospace@gmail.com>",
   "license": "MIT",
   "private": false,
   "scripts": {
     "serve": "webpack server --mode development --config ./webpack/webpack.config.js",
+    "build": "webpack --mode production --config ./webpack/webpack.config.js",
     "test": "jest --watch",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
