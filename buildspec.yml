@@ -26,10 +26,10 @@ phases:
       - echo build Phase >> build complete on 'date'
       - aws s3 cp --recursive dist/ s3://chaospace-cloudfront
   # 빌드 결과물로 나온 아티팩트에 처리
-  artifacts:
-    files:
-      - ./**/*
-      # - location
-    #name: $(date +%Y-%m-%d)
-    base-directory: dist
-    discard-paths: yes
+artifacts:
+  files:
+    - ./**/*
+    # - location
+  #name: $(date +%Y-%m-%d)
+  base-directory: dist
+  discard-paths: yes
