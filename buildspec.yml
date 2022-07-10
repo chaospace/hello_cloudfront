@@ -5,7 +5,11 @@ version: 0.2
 phases:
   # 빌드전 환경 설정
   install:
-    nodejs: 16
+    runtime-versions:
+      nodejs: 16
+    commands:
+      # yarn 사용
+      - npm install yarn -g
   # 빌드전 수행할 명령
   pre_build:
     commands:
