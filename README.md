@@ -25,7 +25,7 @@
           "Effect": "Allow",
           "Principal": "*",
           "Action": "s3:GetObject",
-          "Resource": "arn:aws:s3:::chaospace-cloudfront/*"
+          "Resource": "arn:aws:s3:::[버킷주소]/*"
         }
       ]
     }
