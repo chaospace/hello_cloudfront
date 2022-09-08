@@ -45,6 +45,8 @@
 
   - 배포설정을 위한 buildspec.yml 설정 ( aws설정 창에서 바로 적용가능 혹은 project에 buildspec.yml을 추가)
 
+  - 아티팩트 설정은 buildsepc에서 싱크처리를 한다면 별도로 할 필요없음.
+
   ```yaml
   # 권장버전 현재는 .2
   version: 0.2
