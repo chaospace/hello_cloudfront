@@ -71,6 +71,8 @@
     # 빌드 후 실행 할 명령
     post_build:
       commands:
+      # build 에러가 없을 경우 s3에 산출물 이동
+        - if [ "$CODEBUILD_BUILD_SUCCEEDING" = 0 ] ; then exit 1 ; fi
         - echo build Phase >> build complete on 'date'
         # copy the contents of /build to S3
         - aws s3 sync [빌드 아웃풋 폴더]  s3://[버킷주소]/
