@@ -70,6 +70,11 @@
     pre_build:
       commands:
         - echo build Phase >> pre_build phrase...
+        # npm ci에 해당하는 yarn의 명령어
+        # yarn 버전에 따라
+        # v2 : --immutable --immutable-cache --check-cache,
+        # v1 : --frozen-lockfile
+        # 을 이용
         - yarn install
     # 빌드 명령
     build:
